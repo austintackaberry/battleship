@@ -1,8 +1,20 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import "babel-polyfill";
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as actionCreators from './actions/actionCreators.js';
 
-class App extends Component {
+export class App extends Component {
+
+  componentDidMount() {
+    this.props.initializeShipGrid(this.props.shipsLeft);
+    this.props.initializeShotGrid();
+    this.props.initializeShipsLeft();
+    this.props.randomlyGenerateShipLocations();
+  }
+
   render() {
     return (
       <div className="App">
@@ -18,4 +30,17 @@ class App extends Component {
   }
 }
 
-export default App;
+function mapStateToProps(state) {
+  return {
+    shipGrid: state.shipGrid,
+    shotGrid: state.shotGrid,
+    currentUser: state.currentUser,
+    shipsLeft: state.shipsLeft,
+  }
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(actionCreators, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
