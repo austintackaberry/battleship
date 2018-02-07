@@ -6,6 +6,8 @@ Battleship is a 2 player game that can be played locally. The ship locations are
 
 In order to run a dev server on your local host, you will need to first install all the required npm packages.
 
+`cd react-backend/client`
+
 `npm install`
   
 Next you will need to navigate to the client folder and execute:
