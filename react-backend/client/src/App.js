@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import CurrentUser from './components/CurrentUser.js'
-import Instructions from './components/Instructions.js'
 import ShipGrid from './components/ShipGrid.js'
 import ShotGrid from './components/ShotGrid.js'
 import './App.css';
@@ -11,11 +10,14 @@ import * as actionCreators from './actions/actionCreators.js';
 
 export class App extends Component {
 
-  componentDidMount() {
-    this.props.initializeShipGrid(this.props.shipsLeft);
+  componentWillMount() {
+    this.props.initializeShipGrid();
     this.props.initializeShotGrid();
-    this.props.initializeShipsLeft();
-    this.props.randomlyGenerateShipLocations();
+    this.props.randomlyGenerateShipLocations(this.props.shipsLeft);
+  }
+
+  componentDidUpdate() {
+    this.props.checkForWinner(this.props.shipGrid);
   }
 
   render() {
@@ -24,12 +26,15 @@ export class App extends Component {
         <h1>Battleship</h1>
         <CurrentUser
           currentUser={this.props.currentUser}
+          winner={this.props.winner}
         />
-        <Instructions />
         <ShipGrid
           shipGrid={this.props.shipGrid[this.props.currentUser]}
         />
-        <ShotGrid />
+        <ShotGrid
+          shotGrid={this.props.shotGrid[this.props.currentUser]}
+          onShot={(rowIndex, colIndex) => this.props.onShot(rowIndex, colIndex, this.props.currentUser, this.props.shipGrid, this.props.shotGrid)}
+        />
       </div>
     );
   }
@@ -41,6 +46,7 @@ function mapStateToProps(state) {
     shotGrid: state.shotGrid,
     currentUser: state.currentUser,
     shipsLeft: state.shipsLeft,
+    winner: state.winner,
   }
 }
 

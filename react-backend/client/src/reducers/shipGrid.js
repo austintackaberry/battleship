@@ -20,47 +20,63 @@ function shipGrid(state = [], action) {
       let newState = Object.assign({}, state);
       for (let user in state) {
         let shipOrientation;
-        for (let ship in action.shipsLeft) {
-          shipOrientation = "horizontal";
-          if (Math.random() < 0.5) {
-            shipOrientation = "vertical";
-          }
-          let itFits = false;
-          let rowIndex;
-          let colIndex;
-          const zeroToNArray = Array.apply(null, {length: ship.size}).map(Number.call, Number)
-          do {
-            rowIndex = Math.floor(Math.random()*10);
-            colIndex = Math.floor(Math.random()*10);
-            if (shipOrientation === "horizontal" && colIndex < 10 - ship.size) {
-              itFits = !zeroToNArray.some((offset) => {
-                return newState[user][rowIndex][colIndex+offset].ship;
-              })
+        if (action.shipsLeft[user]) {
+          action.shipsLeft[user].map((ship) => {
+            shipOrientation = "horizontal";
+            if (Math.random() < 0.5) {
+              shipOrientation = "vertical";
             }
-            if (shipOrientation === "vertical" && rowIndex < 10 - ship.size) {
-              itFits = !zeroToNArray.some((offset) => {
-                return newState[user][rowIndex+offset][colIndex].ship;
-              })
+            let itFits = false;
+            let rowIndex;
+            let colIndex;
+            const zeroToNArray = Array.apply(null, {length: ship.size}).map(Number.call, Number)
+            do {
+              rowIndex = Math.floor(Math.random()*10);
+              colIndex = Math.floor(Math.random()*10);
+              if (shipOrientation === "horizontal" && colIndex < 10 - ship.size) {
+                itFits = !zeroToNArray.some((offset) => {
+                  return newState[user][rowIndex][colIndex+offset].ship;
+                })
+              }
+              if (shipOrientation === "vertical" && rowIndex < 10 - ship.size) {
+                itFits = !zeroToNArray.some((offset) => {
+                  return newState[user][rowIndex+offset][colIndex].ship;
+                })
+              }
             }
-          }
-          while (!itFits)
-          if (shipOrientation === "horizontal") {
-            zeroToNArray.map((offset) => {
-              newState[user][rowIndex][colIndex+offset].ship = {
-                type: ship.type,
-                hit: false
-              };
-            });
-          }
-          else {
-            zeroToNArray.map((offset) => {
-              newState[user][rowIndex+offset][colIndex].ship = {
-                type: ship.type,
-                hit: false
-              };
-            });
-          }
+            while (!itFits)
+            if (shipOrientation === "horizontal") {
+              zeroToNArray.map((offset) => {
+                newState[user][rowIndex][colIndex+offset].ship = {
+                  type: ship.type,
+                  hit: false
+                };
+              });
+            }
+            else {
+              zeroToNArray.map((offset) => {
+                newState[user][rowIndex+offset][colIndex].ship = {
+                  type: ship.type,
+                  hit: false
+                };
+              });
+            }
+          });
         }
+      }
+      return newState;
+    }
+    case 'ON_SHOT' : {
+      let newState = Object.assign({}, state);
+      const rowIndex = action.rowIndex;
+      const colIndex = action.colIndex;
+      const currentUser = action.currentUser;
+      let opponent = "user1";
+      if (currentUser === "user1") {
+        opponent = "user2";
+      }
+      if (state[opponent][rowIndex][colIndex].ship) {
+        newState[opponent][rowIndex][colIndex].ship.hit = true;
       }
       return newState;
     }

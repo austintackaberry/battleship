@@ -10,6 +10,16 @@ function currentUser(state = [], action) {
       }
       return state;
     }
+    case 'ON_SHOT': {
+      console.log(state);
+      if (state === "user1") {
+        return "user2"
+      }
+      if (state === "user2") {
+        return "user1"
+      }
+      return state;
+    }
     default:
       return state;
   }
